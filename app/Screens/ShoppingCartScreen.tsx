@@ -1,35 +1,19 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Box, Text, HStack, VStack, Image, Button, Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Product } from '../interfaces/product-interface';
 import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeProduct } from '../redux/actions';
 
-const CartScreen = ({ route }) => {
+const CartScreen = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { selectedProducts: initialSelectedProducts } = route.params;
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>(initialSelectedProducts);
-
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     // Cambiamos las opciones del encabezado
-  //     navigation.setOptions({
-  //       headerLeft: () => (
-  //         <TouchableOpacity
-  //           onPress={() => navigation.goBack()}
-  //           style={{ marginLeft: 10 }}
-  //         >
-  //           <MaterialIcons name="chevron-left" size={30} color="black" />
-  //         </TouchableOpacity>
-  //       ),
-  //     });
-  //   }, [navigation])
-  // );
+  const selectedProducts = useSelector((state: any) => state.selectedProducts);
 
   /**
-   *Renderiza los elementos seleccionado en la pantalla anterior.
+   * Renderiza los elementos seleccionados en la pantalla de carrito.
    *
    * @param {{ item: Product }} { item }
    */
@@ -67,16 +51,13 @@ const CartScreen = ({ route }) => {
   );
 
   /**
-   *Elimina productos.
+   * Elimina un producto del carrito
    *
    * @param {string} id
    */
   const handleRemove = (id: string) => {
-    setSelectedProducts((prevSelectedProducts) =>
-      prevSelectedProducts.filter((product) => product.id !== id)
-    );
+    dispatch(removeProduct(id));
   };
-
 
   const handleCheckout = () => {
     console.log('Proceeding to checkout');

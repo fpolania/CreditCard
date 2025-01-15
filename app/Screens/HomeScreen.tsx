@@ -1,63 +1,55 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { getProducts } from '../services/backend/products'
+import { getProducts } from '../services/backend/products';
 import { Icon } from 'native-base';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { Product } from '../interfaces/product-interface';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { addProduct, removeProduct, setProducts } from '../redux/actions';
 
 type RootStackParamList = {
- Splash: undefined;
- Home: undefined;
- Cart: { selectedProducts: Product[] };
+    Splash: undefined;
+    Home: undefined;
+    Cart: { selectedProducts: Product[] };
 };
-/**
- * Define el tipo para la navegación
- *
- * @return {*} 
- */
+
 type HomecreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 const HomeScreen = () => {
     const navigation = useNavigation<HomecreenNavigationProp>();
-    const [products, setProducts] = useState<Product[]>();
-    const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-    const [cartCount, setCartCount] = useState(0);
+    const dispatch = useDispatch();
+    const products = useSelector((state: any) => state.products);
+    const selectedProducts = useSelector((state: any) => state.selectedProducts);
+    const cartCount = selectedProducts.length;
 
     useEffect(() => {
         const fetchData = async () => {
             const response = await getProducts();
-            setProducts(response);
+            dispatch(setProducts(response));
         };
 
         fetchData();
-    }, []);
+    }, [dispatch]);
 
     /**
-     * Actualiza el estado de selectedProducts quien almacena los datos seleccionados
-     * verifica que si ya esta selecciona se elimine de la lista,
+     * agrega o elimina elementos seleccionado utilizando redux.
+     *
      * @param {Product} product
      */
     const toggleSelection = (product: Product) => {
         const isAlreadySelected = selectedProducts.some(item => item.id === product.id);
-        setSelectedProducts(prev => {
-            let updatedSelectedProducts;
-            if (isAlreadySelected) {
-                updatedSelectedProducts = prev.filter(item => item.id !== product.id);
-            } else {
-                updatedSelectedProducts = [...prev, product];
-            }
-            setCartCount(updatedSelectedProducts.length);
-            return updatedSelectedProducts;
-        });
+        if (isAlreadySelected) {
+            dispatch(removeProduct(product.id));
+        } else {
+            dispatch(addProduct(product));
+        }
     };
 
     /**
-     * Verifica si tebemos productos seleccionado para navegar.
+     *navega a la pantalla CartScreen y le pasa los elementos seleccionados.
      *
      */
     const handleBuy = () => {
@@ -68,9 +60,8 @@ const HomeScreen = () => {
         }
     };
 
-
     /**
-     * Renderiza los card para mostrar la lista de los productos.
+     *renderiza los productos obtenidos del servicio.
      *
      * @param {{ item: Product }} { item }
      */
@@ -100,7 +91,7 @@ const HomeScreen = () => {
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.listContainer}
             />
-            <TouchableOpacity style={styles.buyButton} onPress={(handleBuy)}>
+            <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
                 <Icon
                     color="white"
                     size={30}
@@ -122,12 +113,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f8f9fa',
         padding: 10,
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 15,
-        textAlign: 'center',
     },
     listContainer: {
         paddingBottom: 20,
