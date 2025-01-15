@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CreditCard",
+    "name": "creditcard",
     "slug": "CreditCard",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,20 +15,24 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.flasso.CreditCard"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
@@ -36,6 +40,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "25b8dda1-17fa-49fd-93f6-9caa8d4ee982"
+      }
     }
   }
 }
