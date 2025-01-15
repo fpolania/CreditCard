@@ -68,7 +68,7 @@ const HomeScreen = () => {
     const renderProduct = ({ item }: { item: Product }) => (
         <View style={styles.productCard}>
             <Image source={{ uri: item.image }} style={styles.productImage} />
-            <Text style={styles.productName}>{item.name}</Text>
+            <Text style={styles.productName}>{item.title}</Text>
             <Text style={styles.productDescription}>{item.description}</Text>
             <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
             <TouchableOpacity
@@ -76,7 +76,7 @@ const HomeScreen = () => {
                 onPress={() => toggleSelection(item)}
             >
                 <Text style={styles.selectButtonText}>
-                    {selectedProducts.some(product => product.id === item.id) ? 'Delete' : 'Select'}
+                    {selectedProducts.some(product => product.id === item.id) ? 'Quitar' : 'Agregar'}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     },
     productCard: {
         backgroundColor: '#ffffff',
-        padding: 15,
+        padding: 25,
         borderRadius: 8,
         marginBottom: 15,
         shadowColor: '#000',
@@ -133,6 +133,8 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 8,
         marginBottom: 10,
+        resizeMode: 'contain',
+
     },
     productName: {
         fontSize: 18,

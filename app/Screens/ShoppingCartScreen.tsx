@@ -75,6 +75,15 @@ const CartScreen = () => {
             No hay productos seleccionados.
           </Text>
         }
+        ListFooterComponent={
+          selectedProducts.length > 0 ? (
+            <View style={{ padding: 10 }}>
+              <Text textAlign="center" fontSize="lg" bold>
+                Cantidad de productos: {selectedProducts.length}
+              </Text>
+            </View>
+          ) : null
+        }
       />
       {selectedProducts.length > 0 && (
         <Box style={styles.footer}>
@@ -84,8 +93,8 @@ const CartScreen = () => {
               .reduce((sum, product) => sum + product.price, 0)
               .toFixed(2)}
           </Text>
-          <Button colorScheme="emerald" onPress={handleCheckout}>
-            Checkout
+          <Button colorScheme="cyan" borderRadius={30} onPress={handleCheckout}>
+            Pagar
           </Button>
         </Box>
       )}
@@ -115,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    backgroundColor: '#28a745',
+    backgroundColor: '#8FBCFFB2',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
