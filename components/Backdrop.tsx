@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import { Product } from '@/app/interfaces/product-interface';
+import { createPaymentIntent } from './../app/services/payment/payment';
+import Spinner from "react-native-loading-spinner-overlay";
 
 type RootStackParamList = {
     Splash: undefined;
@@ -30,6 +32,7 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
     const [error, setError] = useState('');
     const [cardType, setCardType] = useState('');
     const navigation = useNavigation<ConfirmationcreenNavigationProp>();
+    const [spinner, setSpinner] = useState(false);
 
     /** @type {*}  Valida que el formulario sea valido*/
     const isFormValid = (
@@ -41,12 +44,13 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
         identicationNumber !== '' &&
         error === ''
     );
-    
+
     /**
      *Realiza el pago y nevagea a la pantalla de confirmacíon,
      *
      */
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        setSpinner(true);
         let data = {
             amount: amount,
             units: units,
@@ -55,7 +59,11 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
             cardNumber: cardNumber,
             document: identicationNumber
         }
-        navigation.navigate('Confirmation', { dataClient: data })
+        const response = await createPaymentIntent(data);
+        setSpinner(false);
+        if (response?.amount) {
+            navigation.navigate('Confirmation', { dataClient: data })
+        }
     };
 
     /**
@@ -204,130 +212,143 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
 
 
     return (
-        <BackdropComponent
-            visible={visible}
-            handleOpen={handleOpen}
-            handleClose={handleClose}
-            onClose={handleClose}
-            swipeConfig={{
-                velocityThreshold: 0.3,
-                directionalOffsetThreshold: 80,
-            }}
-            animationConfig={{
-                speed: 14,
-                bounciness: 4,
-            }}
-            overlayColor="rgba(0,0,0,0.32)"
-            backdropStyle={{
-                backgroundColor: '#fff',
-            }}
-        >
-            <View style={styles.container}>
-                <Text style={styles.title}>INFORMACIÓN DE LA TARJETA</Text>
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../assets/images/descarga.jpg')}
-                        style={styles.logo}
-                    />
-                </View>
-
-                <Input
-                    value={cardNumber}
-                    onChangeText={handleInputChange}
-                    keyboardType="numeric"
-                    placeholder="Número de la tarjeta"
-                    maxLength={19}
-                    InputRightElement={
+        <>
+            <BackdropComponent
+                visible={visible}
+                handleOpen={handleOpen}
+                handleClose={handleClose}
+                onClose={handleClose}
+                swipeConfig={{
+                    velocityThreshold: 0.3,
+                    directionalOffsetThreshold: 80,
+                }}
+                animationConfig={{
+                    speed: 14,
+                    bounciness: 4,
+                }}
+                overlayColor="rgba(0,0,0,0.32)"
+                backdropStyle={{
+                    backgroundColor: '#fff',
+                }}
+            >
+                <View style={styles.container}>
+                    <Text style={styles.title}>INFORMACIÓN DE LA TARJETA</Text>
+                    <View style={styles.logoContainer}>
                         <Image
-                            source={
-                                cardType === 'Visa' ?
-                                    require('../assets/images/visa.png')
-                                    : require('../assets/images/mastercard.png')
-                            }
-                            style={styles.imageTypeCard}
+                            source={require('../assets/images/descarga.jpg')}
+                            style={styles.logo}
                         />
-                    }
-                    borderRadius={50}
-                    style={styles.input}
-                />
+                    </View>
 
-                <View style={styles.row}>
                     <Input
-                        value={expirationDate}
-                        onChangeText={handleInputChangeDate}
+                        value={cardNumber}
+                        onChangeText={handleInputChange}
                         keyboardType="numeric"
-                        placeholder="MM/YY"
-                        maxLength={5}
+                        placeholder="Número de la tarjeta"
+                        maxLength={19}
                         InputRightElement={
-                            <Icon as={<Ionicons name="calendar" />} size={5} ml={1} right={2} color="orange.500" />
-                        }
-                        borderRadius={50}
-                        style={[styles.input]}
-                        width={'45%'}
-                    />
-                    <Input
-                        value={cvv}
-                        onChangeText={(text) => handleCard(text)}
-                        keyboardType="numeric"
-                        placeholder="CVC"
-                        maxLength={3}
-                        InputRightElement={
-                            <Icon as={<Ionicons name="key-sharp" />} size={5} ml={1} right={2} color="orange.500" />
+                            <Image
+                                source={
+                                    cardType === 'Visa' ?
+                                        require('../assets/images/visa.png')
+                                        : require('../assets/images/mastercard.png')
+                                }
+                                style={styles.imageTypeCard}
+                            />
                         }
                         borderRadius={50}
                         style={styles.input}
-                        width={'45%'}
                     />
+
+                    <View style={styles.row}>
+                        <Input
+                            value={expirationDate}
+                            onChangeText={handleInputChangeDate}
+                            keyboardType="numeric"
+                            placeholder="MM/YY"
+                            maxLength={5}
+                            InputRightElement={
+                                <Icon as={<Ionicons name="calendar" />} size={5} ml={1} right={2} color="orange.500" />
+                            }
+                            borderRadius={50}
+                            style={[styles.input]}
+                            width={'45%'}
+                        />
+                        <Input
+                            value={cvv}
+                            onChangeText={(text) => handleCard(text)}
+                            keyboardType="numeric"
+                            placeholder="CVC"
+                            maxLength={3}
+                            InputRightElement={
+                                <Icon as={<Ionicons name="key-sharp" />} size={5} ml={1} right={2} color="orange.500" />
+                            }
+                            borderRadius={50}
+                            style={styles.input}
+                            width={'45%'}
+                        />
+                    </View>
+                    <Input
+                        value={cardHolder}
+                        onChangeText={(text) => handleCardHolderChange(text)}
+                        keyboardType="default"
+                        placeholder="Nombre en la tarjeta"
+                        InputRightElement={
+                            <Icon as={<Ionicons name="person-circle" />} size={5} ml={1} right={2} color="orange.500" />
+                        }
+                        borderRadius={50}
+                        style={styles.input}
+                    />
+                    <View style={styles.row}>
+                        <Input
+                            value={installments}
+                            onChangeText={handleInstallmentsChange}
+                            keyboardType="numeric"
+                            placeholder="Cuotas"
+                            maxLength={2}
+                            InputRightElement={
+                                <Icon as={<Ionicons name="stats-chart" />} size={5} ml={1} right={2} color="orange.500" />
+                            }
+                            borderRadius={50}
+                            style={styles.input}
+                            width={'35%'}
+                        />
+                        <Input
+                            value={identicationNumber}
+                            onChangeText={handleInputChangeIdentication}
+                            keyboardType="numeric"
+                            placeholder="Número Identificación"
+                            maxLength={10}
+                            InputRightElement={
+                                <Icon as={<Ionicons name="card" />} size={5} ml={1} right={2} color="orange.500" />
+                            }
+                            borderRadius={50}
+                            style={styles.input}
+                            width={'60%'}
+                        />
+                    </View>
+                    {error && <Text style={styles.error}>{error}</Text>}
+                    <View style={styles.card}>
+                        <Text style={styles.title}>TOTAL</Text>
+                        <Text style={styles.amount}>$ {amount} </Text>
+                        <Button color={"black"} disabled={!isFormValid} borderRadius={30} onPress={handleSubmit} >
+                            PAGAR
+                        </Button>
+                    </View>
                 </View>
-                <Input
-                    value={cardHolder}
-                    onChangeText={(text) => handleCardHolderChange(text)}
-                    keyboardType="default"
-                    placeholder="Nombre en la tarjeta"
-                    InputRightElement={
-                        <Icon as={<Ionicons name="person-circle" />} size={5} ml={1} right={2} color="orange.500" />
-                    }
-                    borderRadius={50}
-                    style={styles.input}
+            </BackdropComponent>
+            {spinner && (
+                <Spinner
+                    visible={spinner}
+                    textContent={"Validando información..."}
+                    textStyle={{ color: "#FF7423" }}
+                    overlayColor="rgba(0, 0, 0, 0.5)"
+                    size={100}
+                    color="#FF7423"
+                    animation="fade"
                 />
-                <View style={styles.row}>
-                    <Input
-                        value={installments}
-                        onChangeText={handleInstallmentsChange}
-                        keyboardType="numeric"
-                        placeholder="Cuotas"
-                        maxLength={2}
-                        InputRightElement={
-                            <Icon as={<Ionicons name="stats-chart" />} size={5} ml={1} right={2} color="orange.500" />
-                        }
-                        borderRadius={50}
-                        style={styles.input}
-                        width={'35%'}
-                    />
-                    <Input
-                        value={identicationNumber}
-                        onChangeText={handleInputChangeIdentication}
-                        keyboardType="numeric"
-                        placeholder="Número Identificación"
-                        maxLength={10}
-                        InputRightElement={
-                            <Icon as={<Ionicons name="card" />} size={5} ml={1} right={2} color="orange.500" />
-                        }
-                        borderRadius={50}
-                        style={styles.input}
-                        width={'60%'}
-                    />
-                </View>
-                {error && <Text style={styles.error}>{error}</Text>}
-                <View style={styles.card}>
-                    <Text style={styles.title}>TOTAL</Text>
-                    <Text style={styles.amount}>$ {amount} </Text>
-                    <Button color={"black"} disabled={!isFormValid} borderRadius={30} onPress={handleSubmit} >
-                        PAGAR
-                    </Button>
-                </View>
-            </View>
-        </BackdropComponent>
+            )}
+        </>
     );
 };
 
@@ -405,3 +426,4 @@ const styles = StyleSheet.create({
 });
 
 export default CustomBackdrop;
+

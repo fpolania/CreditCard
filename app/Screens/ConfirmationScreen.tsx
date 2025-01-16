@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { clearSelectedProducts } from '../redux/actions';
 import { Product } from '../interfaces/product-interface';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native'; 
 
 type RootStackParamList = {
     Splash: undefined;
@@ -24,6 +26,11 @@ const ConfirmationScreen = ({ route }) => {
     const { amount, units, person, cardType, cardNumber, document } = dataClient;
     const [dateNow, setDate] = useState(new Date());
 
+    useFocusEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+        return () => backHandler.remove();
+    });
+    
 
     useEffect(() => {
         const interval = setInterval(() => {
