@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import { Backdrop as BackdropComponent } from 'react-native-backdrop';
 import { Button, Icon, Input } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,6 +63,8 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
         setSpinner(false);
         if (response?.amount) {
             navigation.navigate('Confirmation', { dataClient: data })
+        } else if (response?.error) {
+            Alert.alert(response?.error?.code, response?.error?.message);
         }
     };
 
@@ -87,8 +89,8 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
         const rawValue = value.replace(/-/g, '');
         const isDeleting = value.length < cardNumber.length;
         const updatedValue = isDeleting ? value : formatCardNumber(rawValue);
-        setCardNumber(updatedValue);
         detectCardType(updatedValue);
+        setCardNumber(updatedValue);
         validateCardNumber(rawValue);
     };
 
