@@ -37,7 +37,7 @@ const CartScreen = () => {
           alt="image-profile"
           size="lg"
           borderRadius={8}
-          resizeMode="cover"
+          resizeMode="contain"
         />
         <VStack flex={1}>
           <Text bold fontSize="md" numberOfLines={1}>
@@ -71,11 +71,6 @@ const CartScreen = () => {
     dispatch(removeProduct(id));
   };
 
-  const handleCheckout = () => {
-    console.log('Proceeding to checkout');
-    // Aquí manejas el proceso de compra
-  };
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -91,7 +86,7 @@ const CartScreen = () => {
           selectedProducts.length > 0 ? (
             <View style={{ padding: 10 }}>
               <Text textAlign="center" fontSize="lg" bold>
-                Cantidad de productos: {selectedProducts.length}
+                CANTIDAD DE PRODUCTOS: {selectedProducts.length}
               </Text>
             </View>
           ) : null
