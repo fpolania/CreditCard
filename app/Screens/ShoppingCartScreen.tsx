@@ -109,7 +109,7 @@ const CartScreen = () => {
       {selectedProducts.length > 0 && (
         <Box style={styles.footer}>
           <Text bold fontSize="lg" color="white">
-            Total: $
+            TOTAL: $
             {selectedProducts
               .reduce((sum, product) => sum + product.price, 0)
               .toFixed(2)}

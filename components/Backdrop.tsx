@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Image } from 'react-native';
 import { Backdrop as BackdropComponent } from 'react-native-backdrop';
-import { Button } from 'native-base';
+import { Button, Icon, Input } from 'native-base';
+import { Ionicons } from '@expo/vector-icons';
 
 const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
     const [cardNumber, setCardNumber] = useState('');
@@ -11,30 +12,22 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
     const [installments, setInstallments] = useState('1');
     const [identicationNumber, setIdentication] = useState('');
     const [error, setError] = useState('');
-    const [cardLogo, setCardLogo] = useState('');
+    const [cardType, setCardType] = useState('');
 
-    const detectCardType = (number: string) => {
-        if (number.startsWith('4') && number.length === 16) {
-            return 'VISA';
-        } else if (/^5[1-5]/.test(number) && number.length === 16) {
-            return 'MasterCard';
-        } else {
-            return '';
-        }
-    };
 
-    const validateCard = () => {
-        const cardType = detectCardType(cardNumber.replace(/-/g, ''));
-        if (!cardType) {
-            setError('Invalid card number');
-            setCardLogo('');
-            return false;
-        }
 
-        setCardLogo(cardType);
-        setError('');
-        return true;
-    };
+    // const validateCard = () => {
+    //     const cardType = detectCardType(cardNumber.replace(/-/g, ''));
+    //     if (!cardType) {
+    //         setError('Invalid card number');
+    //         setCardLogo('');
+    //         return false;
+    //     }
+
+    //     setCardLogo(cardType);
+    //     setError('');
+    //     return true;
+    // };
     const isFormValid = (
         cardNumber !== '' &&
         expirationDate !== '' &&
@@ -45,14 +38,14 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
         error === ''
     );
     const handleSubmit = () => {
-        if (validateCard()) {
-            alert('Tarjeta validada y datos enviados');
-        }
+        // if (validateCard()) {
+        //     alert('Tarjeta validada y datos enviados');
+        // }
     };
 
     /**
      *Le da formato al dato entrada para el campo CardNumber
-     *ejemplo 1111-3333-2233
+     *ejemplo 1111-3333-2233-3423
      * @param {string} input
      * @return {*} 
      */
@@ -68,15 +61,40 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
      * @param {string} value
      */
     const handleInputChange = (value: string) => {
-        if (value.length < cardNumber.length) {
-            setCardNumber(value);
-            setError('Debe tener 16 dígitos')
-        } else {
-            const formatted = formatCardNumber(value);
-            setCardNumber(formatted);
-            setError('')
-        }
+        const rawValue = value.replace(/-/g, '');
+        const isDeleting = value.length < cardNumber.length;
+        const updatedValue = isDeleting ? value : formatCardNumber(rawValue);
+        setCardNumber(updatedValue);
+        detectCardType(updatedValue);
+        validateCardNumber(rawValue);
     };
+    
+    /**
+     * Valida que tipo de tarjeta es, para mostrar la imagen.
+     *
+     * @param {string} number
+     */
+    const detectCardType = (number: string) => {
+        const firstDigit = number.charAt(0);
+        const type = firstDigit === '5' ? 'MasterCard' : 'Visa';
+        setCardType(type)
+    };
+
+    /**
+     *Valida la cantidad de digitos en el campo CardNumber.
+     *
+     * @param {string} value
+     */
+    const validateCardNumber = (value: string) => {
+        if (value.charAt(0) === '0') {
+            setError('Debe ser mayor a cero');
+            return;
+        }
+        setError(value.length === 16 ? '' : 'Debe tener 16 dígitos');
+    };
+
+
+
 
     const handleInputChangeDate = (text: string) => {
         const formatted = formatExpirationDate(text);
@@ -190,61 +208,99 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
             }}
         >
             <View style={styles.container}>
-                <Text style={styles.title}>Información De La Tarjeta</Text>
+                <Text style={styles.title}>INFORMACIÓN DE LA TARJETA</Text>
                 <View style={styles.logoContainer}>
                     <Image
                         source={require('../assets/images/descarga.jpg')}
                         style={styles.logo}
                     />
                 </View>
-                <TextInput
-                    style={styles.input}
+
+                <Input
                     value={cardNumber}
                     onChangeText={handleInputChange}
                     keyboardType="numeric"
                     placeholder="Número de la tarjeta"
                     maxLength={19}
+                    InputRightElement={
+                        <Image
+                            source={
+                                cardType === 'Visa' ?
+                                    require('../assets/images/visa.png')
+                                    : require('../assets/images/mastercard.png')
+                            }
+                            style={styles.imageTypeCard}
+                        />
+                    }
+                    borderRadius={50}
+                    style={styles.input}
                 />
+
                 <View style={styles.row}>
-                    <TextInput
-                        style={[styles.input, styles.halfInput]}
-                        placeholder="MM/YY"
-                        keyboardType="numeric"
-                        maxLength={5}
+                    <Input
                         value={expirationDate}
                         onChangeText={handleInputChangeDate}
-                    />
-                    <TextInput
-                        style={[styles.input, styles.halfInput]}
-                        placeholder="CVV"
                         keyboardType="numeric"
-                        maxLength={3}
+                        placeholder="MM/YY"
+                        maxLength={5}
+                        InputRightElement={
+                            <Icon as={<Ionicons name="calendar" />} size={5} ml={1} right={2} color="orange.500" />
+                        }
+                        borderRadius={50}
+                        style={[styles.input]}
+                        width={'45%'}
+                    />
+                    <Input
                         value={cvv}
                         onChangeText={(text) => handleCard(text)}
+                        keyboardType="numeric"
+                        placeholder="CVC"
+                        maxLength={3}
+                        InputRightElement={
+                            <Icon as={<Ionicons name="key-sharp" />} size={5} ml={1} right={2} color="orange.500" />
+                        }
+                        borderRadius={50}
+                        style={styles.input}
+                        width={'45%'}
                     />
                 </View>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nombre en la tarjeta"
+                <Input
                     value={cardHolder}
                     onChangeText={(text) => handleCardHolderChange(text)}
+                    keyboardType="default"
+                    placeholder="Nombre en la tarjeta"
+                    InputRightElement={
+                        <Icon as={<Ionicons name="person-circle" />} size={5} ml={1} right={2} color="orange.500" />
+                    }
+                    borderRadius={50}
+                    style={styles.input}
                 />
                 <View style={styles.row}>
-                    <TextInput
-                        style={[styles.input, styles.halfInput]}
-                        placeholder="Número De Cuotas"
-                        keyboardType="numeric"
-                        maxLength={2}
+                    <Input
                         value={installments}
                         onChangeText={handleInstallmentsChange}
-                    />
-                    <TextInput
-                        style={[styles.input, styles.halfInput]}
-                        placeholder="Número Identificación"
                         keyboardType="numeric"
-                        maxLength={10}
+                        placeholder="Cuotas"
+                        maxLength={2}
+                        InputRightElement={
+                            <Icon as={<Ionicons name="stats-chart" />} size={5} ml={1} right={2} color="orange.500" />
+                        }
+                        borderRadius={50}
+                        style={styles.input}
+                        width={'35%'}
+                    />
+                    <Input
                         value={identicationNumber}
                         onChangeText={handleInputChangeIdentication}
+                        keyboardType="numeric"
+                        placeholder="Número Identificación"
+                        maxLength={10}
+                        InputRightElement={
+                            <Icon as={<Ionicons name="card" />} size={5} ml={1} right={2} color="orange.500" />
+                        }
+                        borderRadius={50}
+                        style={styles.input}
+                        width={'60%'}
                     />
                 </View>
                 {error && <Text style={styles.error}>{error}</Text>}
@@ -265,7 +321,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        marginBottom: 10,
+        marginBottom: 15,
+        top: 7
     },
     container: {
         padding: 20,
@@ -278,17 +335,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     input: {
-        width: '100%',
         height: 48,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        marginBottom: 10,
-        paddingHorizontal: 10,
-        borderRadius: 50,
+        borderRadius: 100,
+        fontSize: 16,
+
     },
-    halfInput: {
-        width: '48%',
-    },
+
     cardLogo: {
         width: 50,
         height: 30,
@@ -313,8 +365,8 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#FFFFFF',
-        paddingVertical: 20,
-        paddingHorizontal: 20,
+        paddingVertical: 15,
+        paddingHorizontal: 30,
         borderRadius: 10,
         alignItems: 'center',
         shadowColor: '#000',
@@ -322,6 +374,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 5,
         elevation: 5,
+        top: 15
     },
     amount: {
         fontSize: 24,
@@ -329,6 +382,11 @@ const styles = StyleSheet.create({
         color: '#00C853',
         marginBottom: 10
     },
+    imageTypeCard: {
+        width: 24,
+        height: 24,
+        marginRight: 10,
+    }
 });
 
 export default CustomBackdrop;
