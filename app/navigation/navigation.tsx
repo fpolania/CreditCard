@@ -1,12 +1,12 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import SplashScreen from '../Screens/SplashScreen';
 import HomeScreen from '../Screens/HomeScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialIcons } from "@expo/vector-icons";
 import { Icon } from 'native-base';
 import CartScreen from '../Screens/ShoppingCartScreen';
+import ConfirmationScreen from '../Screens/ConfirmationScreen';
 
 const Stack = createNativeStackNavigator();
 export const Navigation = () => {
@@ -38,6 +38,7 @@ export const Navigation = () => {
                             />
                         ),
                     })} />
+                <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
             </Stack.Navigator>
 
         </NavigationContainer>

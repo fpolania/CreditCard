@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Backdrop as BackdropComponent } from 'react-native-backdrop';
 import { Button, Icon, Input } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { Product } from '@/app/interfaces/product-interface';
 
-const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
+type RootStackParamList = {
+    Splash: undefined;
+    Home: undefined;
+    Cart: { selectedProducts: Product[] };
+    Confirmation: { dataClient: any }
+};
+
+type ConfirmationcreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Confirmation'>;
+
+
+
+
+
+const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any) => {
     const [cardNumber, setCardNumber] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
     const [cvv, setCvv] = useState('');
@@ -13,21 +29,9 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
     const [identicationNumber, setIdentication] = useState('');
     const [error, setError] = useState('');
     const [cardType, setCardType] = useState('');
+    const navigation = useNavigation<ConfirmationcreenNavigationProp>();
 
-
-
-    // const validateCard = () => {
-    //     const cardType = detectCardType(cardNumber.replace(/-/g, ''));
-    //     if (!cardType) {
-    //         setError('Invalid card number');
-    //         setCardLogo('');
-    //         return false;
-    //     }
-
-    //     setCardLogo(cardType);
-    //     setError('');
-    //     return true;
-    // };
+    /** @type {*}  Valida que el formulario sea valido*/
     const isFormValid = (
         cardNumber !== '' &&
         expirationDate !== '' &&
@@ -37,10 +41,21 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
         identicationNumber !== '' &&
         error === ''
     );
+    
+    /**
+     *Realiza el pago y nevagea a la pantalla de confirmacíon,
+     *
+     */
     const handleSubmit = () => {
-        // if (validateCard()) {
-        //     alert('Tarjeta validada y datos enviados');
-        // }
+        let data = {
+            amount: amount,
+            units: units,
+            person: cardHolder,
+            cardType: cardType,
+            cardNumber: cardNumber,
+            document: identicationNumber
+        }
+        navigation.navigate('Confirmation', { dataClient: data })
     };
 
     /**
@@ -68,7 +83,7 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount }: any) => {
         detectCardType(updatedValue);
         validateCardNumber(rawValue);
     };
-    
+
     /**
      * Valida que tipo de tarjeta es, para mostrar la imagen.
      *
