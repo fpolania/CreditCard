@@ -16,7 +16,7 @@ export const Navigation = () => {
                 <Stack.Screen name="Splash" component={SplashScreen} />
                 <Stack.Screen name="Home" component={HomeScreen}
                     options={({ navigation }) => ({
-                        title: 'Products',
+                        title: 'Productos',
                         headerTitleAlign: 'center',
                         unmountOnBlur: true,
                         headerShown: true,
@@ -24,7 +24,7 @@ export const Navigation = () => {
                     })} />
                 <Stack.Screen name="Cart" component={CartScreen}
                     options={({ navigation }) => ({
-                        title: 'Select Products',
+                        title: 'Bolsa De Compras',
                         headerTitleAlign: 'center',
                         unmountOnBlur: true,
                         headerShown: true,

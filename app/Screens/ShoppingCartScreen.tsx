@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
 import { Box, Text, HStack, VStack, Image, Button, Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Product } from '../interfaces/product-interface';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeProduct } from '../redux/actions';
+import CustomBackdrop from '@/components/Backdrop';
 
 const CartScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [isBackdropVisible, setIsBackdropVisible] = useState(false);
   const selectedProducts = useSelector((state: any) => state.selectedProducts);
+
+
+  const openBackdrop = () => {
+    setIsBackdropVisible(true);
+  };
+
+  // Función para cerrar el Backdrop
+  const closeBackdrop = () => {
+    setIsBackdropVisible(false);
+  };
 
   /**
    * Renderiza los elementos seleccionados en la pantalla de carrito.
@@ -85,6 +97,15 @@ const CartScreen = () => {
           ) : null
         }
       />
+
+      <CustomBackdrop
+        visible={isBackdropVisible}
+        handleOpen={openBackdrop}
+        handleClose={closeBackdrop}
+        amount={selectedProducts
+          .reduce((sum, product) => sum + product.price, 0)
+          .toFixed(2)}
+      />
       {selectedProducts.length > 0 && (
         <Box style={styles.footer}>
           <Text bold fontSize="lg" color="white">
@@ -93,8 +114,8 @@ const CartScreen = () => {
               .reduce((sum, product) => sum + product.price, 0)
               .toFixed(2)}
           </Text>
-          <Button colorScheme="cyan" borderRadius={30} onPress={handleCheckout}>
-            Pagar
+          <Button colorScheme="cyan" borderRadius={30} onPress={openBackdrop}>
+            IR A PAGAR
           </Button>
         </Box>
       )}
