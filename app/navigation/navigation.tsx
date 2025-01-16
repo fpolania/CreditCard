@@ -24,7 +24,7 @@ export const Navigation = () => {
                     })} />
                 <Stack.Screen name="Cart" component={CartScreen}
                     options={({ navigation }) => ({
-                        title: 'Bolsa De Compras',
+                        title: 'Detalle de compra',
                         headerTitleAlign: 'center',
                         unmountOnBlur: true,
                         headerShown: true,

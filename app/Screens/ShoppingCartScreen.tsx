@@ -43,7 +43,7 @@ const CartScreen = () => {
           <Text bold fontSize="md" numberOfLines={1}>
             {item.name}
           </Text>
-          <Text fontSize="sm" color="gray.500" numberOfLines={2}>
+          <Text fontSize="sm" color="gray.500" bold numberOfLines={2}>
             {item.title}
           </Text>
           <Text bold fontSize="lg" color="emerald.500" mt={1}>
