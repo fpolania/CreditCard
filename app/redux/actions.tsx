@@ -5,6 +5,7 @@ export const ADD_PRODUCT = 'ADD_PRODUCT';
 export const REMOVE_PRODUCT = 'REMOVE_PRODUCT';
 export const REMOVE_PRODUCTALL = 'REMOVE_PRODUCTALL';
 export const STORE_CREDIT_CARD = 'STORE_CREDIT_CARD';
+export const CLEAR_CREDIT_CARD_DATA = 'CLEAR_CREDIT_CARD_DATA'
 
 export const setProducts = (products: Product[]) => ({
   type: SET_PRODUCTS,
@@ -29,5 +30,10 @@ export const storeCreditCardData = (data) => {
   return {
     type: STORE_CREDIT_CARD,
     payload: data,
+  };
+};
+export const clearCreditCardData = () => {
+  return {
+    type: CLEAR_CREDIT_CARD_DATA,
   };
 };

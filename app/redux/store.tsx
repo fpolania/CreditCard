@@ -42,6 +42,11 @@ const rootReducer = (state = initialState, action: any): State => {
       };
     case 'STORE_CREDIT_CARD':
       return { ...state, encryptedCardData: action.payload };
+    case 'CLEAR_CREDIT_CARD_DATA':
+      return {
+        ...state,
+        encryptedCardData: null,
+      };
     case 'REMOVE_PRODUCTALL':
       return {
         ...state,

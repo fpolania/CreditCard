@@ -3,7 +3,7 @@ import { Text, Image, Button } from 'native-base';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { clearSelectedProducts } from '../redux/actions';
+import { clearCreditCardData, clearSelectedProducts } from '../redux/actions';
 import { useFocusEffect } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 import { decryptedData } from '../crypto/crypto';
@@ -49,6 +49,7 @@ const ConfirmationScreen = () => {
     };
     const handleSubmit = () => {
         dispatch(clearSelectedProducts());
+        dispatch(clearCreditCardData());
         navigation.navigate('Home' as never);
     };
     return (
