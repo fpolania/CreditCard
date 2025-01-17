@@ -1,22 +1,17 @@
-import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+    View, Text, FlatList, StyleSheet,
+    Image, TouchableOpacity, Alert, ActivityIndicator
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { getProducts } from '../services/backend/products';
 import { Icon } from 'native-base';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { Product } from '../interfaces/product-interface';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProduct, removeProduct, setProducts } from '../redux/actions';
 
-// type RootStackParamList = {
-//     Splash: undefined;
-//     Home: undefined;
-//     Cart: undefined;
-// };
-
-// type HomecreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export const HomeScreen = () => {
     const navigation = useNavigation();
@@ -24,6 +19,7 @@ export const HomeScreen = () => {
     const products = useSelector((state: any) => state.products);
     const selectedProducts = useSelector((state: any) => state.selectedProducts);
     const cartCount = selectedProducts.length;
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -67,7 +63,13 @@ export const HomeScreen = () => {
      */
     const renderProduct = ({ item }: { item: Product }) => (
         <View style={styles.productCard}>
-            <Image source={{ uri: item.image }} style={styles.productImage} />
+            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+            <Image
+                source={{ uri: item.image }}
+                onLoadStart={() => setLoading(true)}
+                onLoadEnd={() => setLoading(false)}
+                style={styles.productImage}
+            />
             <Text style={styles.productName}>{item.title}</Text>
             <Text style={styles.productDescription}>{item.description}</Text>
             <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
