@@ -1,45 +1,46 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import SplashScreen from '../Screens/SplashScreen';
-import {HomeScreen} from '../Screens/HomeScreen';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialIcons } from "@expo/vector-icons";
-import { Icon } from 'native-base';
+import { HomeScreen } from '../Screens/HomeScreen';
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import CartScreen from '../Screens/ShoppingCartScreen';
 import ConfirmationScreen from '../Screens/ConfirmationScreen';
+import { MaterialIcons } from "@expo/vector-icons";
+import { Icon } from "native-base";
 
-const Stack = createNativeStackNavigator();
+
+const Drawer = createDrawerNavigator();
 export const Navigation = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Splash" component={SplashScreen} />
-                <Stack.Screen name="Home" component={HomeScreen}
+            <Drawer.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+                <Drawer.Screen name="Splash" component={SplashScreen} />
+                <Drawer.Screen name="Home" component={HomeScreen}
                     options={() => ({
                         title: 'Productos',
                         headerTitleAlign: 'center',
-                        unmountOnBlur: true,
                         headerShown: true,
+                        unmountOnBlur: true,
                         swipeEnabled: true,
-                    })} />
-                <Stack.Screen name="Cart" component={CartScreen}
+                    })}
+                />
+                <Drawer.Screen name="Cart" component={CartScreen}
                     options={({ navigation }) => ({
-                        title: 'Detalle de compra',
+                        title: 'Detalle De La Compra',
                         headerTitleAlign: 'center',
-                        unmountOnBlur: true,
                         headerShown: true,
-                        swipeEnabled: true,
                         headerLeft: () => (
                             <Icon
-                                color={'black'}
+                                color={'#000000'}
                                 size={8}
                                 onPress={() => navigation.navigate('Home')}
                                 as={<MaterialIcons name='chevron-left' />}
+                                ml={3}
                             />
                         ),
                     })} />
-                <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
-            </Stack.Navigator>
+                <Drawer.Screen name="Confirmation" component={ConfirmationScreen} />
+            </Drawer.Navigator>
 
         </NavigationContainer>
     );
