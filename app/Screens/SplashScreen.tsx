@@ -3,36 +3,17 @@ import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
-
-/**
- * Define las rutas de navegación
- *
- * @return {*} 
- */
-type RootStackParamList = {
-  Splash: undefined;
-  Home: undefined; 
-};
-
-/**
- * Define el tipo para la navegación
- *
- * @return {*} 
- */
-type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
-
-
 /**
  * SplashScreen luego de 4000 remplza la url y nos muestra el home
  *
  * @return {*} 
  */
 const SplashScreen = () => {
-  const navigation = useNavigation<SplashScreenNavigationProp>();
+  const navigation = useNavigation();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Home');
+      navigation.navigate('Home' as never);
     }, 4000);
 
     return () => clearTimeout(timer);

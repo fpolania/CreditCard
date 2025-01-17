@@ -29,7 +29,7 @@ const initialState: State = {
  * @param {*} action
  * @return {*}  {State}
  */
-const rootReducer = (state = initialState, action: any): State => {
+export const rootReducer = (state = initialState, action: any): State => {
   switch (action.type) {
     case 'SET_PRODUCTS':
       return { ...state, products: action.payload };

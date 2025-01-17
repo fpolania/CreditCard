@@ -1,66 +1,54 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { useDispatch } from 'react-redux';
-import { setProducts } from '../../app/redux/actions';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { Provider } from 'react-redux';
+import { rootReducer } from '../../app/redux/store';
+import { HomeScreen } from '@/app/Screens/HomeScreen';
+import { configureStore } from '@reduxjs/toolkit';
 import { NativeBaseProvider } from 'native-base';
-import {HomeScreen} from '@/app/Screens/HomeScreen';
 
-// Mock de servicios
-jest.mock('../../app/services/backend/products', () => ({
-    getProducts: jest.fn(),
-}));
-
-// Mock de Redux
-jest.mock('react-redux', () => ({
-    useDispatch: jest.fn(),
-}));
-
-// Mock de react-native-safe-area-context
-jest.mock('react-native-safe-area-context', () => ({
-    SafeAreaProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
-// Mock de useNavigation de @react-navigation/native
-jest.mock('@react-navigation/native', () => ({
-    useNavigation: jest.fn(), // Mock a useNavigation aquí directamente
-}));
-
-// Función para envolver el componente en el contexto necesario
-const MockNavigator = ({ component }: { component: JSX.Element }) => (
-    <NativeBaseProvider>
-        <NavigationContainer>
-            {component}
-        </NavigationContainer>
-    </NativeBaseProvider>
-);
+const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+});
 
 describe('HomeScreen', () => {
-    it('debería llamar a getProducts y despachar los productos', async () => {
-        const mockProducts = [{ id: 1, name: 'Producto 1' }, { id: 2, name: 'Producto 2' }];
-        
-        // Mock de getProducts
-        const { getProducts } = require('../../app/services/backend/products');
-        getProducts.mockResolvedValue(mockProducts);
+    it('debe mostrar los productos y el botón de compra', () => {
+        const { getByText, getByTestId } = render(
+            <Provider store={store}>
+                <NavigationContainer>
+                    <HomeScreen />
+                </NavigationContainer>
+            </Provider>
+        );
 
-        // Mock de useDispatch
-        const mockDispatch = jest.fn();
-        (useDispatch as any as jest.Mock).mockReturnValue(mockDispatch);
+        expect(getByText('Producto 1')).toBeTruthy();
+        expect(getByText('$10')).toBeTruthy();
+        expect(getByText('Producto 2')).toBeTruthy();
+        expect(getByText('$20')).toBeTruthy();
 
-        // Mock de useNavigation
-        const mockNavigate = jest.fn();
-        (useNavigation as any as jest.Mock).mockReturnValue({ navigate: mockNavigate });
+        const buyButton = getByTestId('buy-button');
+        expect(buyButton).toBeTruthy();
+    });
 
-        // Renderizar el componente
-        //render(<MockNavigator component={<HomeScreen />} />);
-
-        // Esperar a que se resuelvan las promesas y que se hayan hecho las llamadas
-        await waitFor(() => expect(getProducts).toHaveBeenCalledTimes(1));
-
-        // Verificar que se haya despachado la acción setProducts con los productos correctos
-        expect(mockDispatch).toHaveBeenCalledWith(setProducts(mockProducts as any));
-
-        // Si es necesario, verifica otras interacciones, como la llamada a navigate
-        expect(mockNavigate).not.toHaveBeenCalled();
+    it('debe manejar la acción de compra cuando se presiona el botón', async () => {
+        const { getByTestId, getByText, debug } = render(
+            <Provider store={store}>
+                <NavigationContainer>
+                    <NativeBaseProvider>
+                        <HomeScreen />
+                    </NativeBaseProvider>
+                </NavigationContainer>
+            </Provider>
+        );
+    
+        debug();
+    
+        const buyButton = getByTestId('buy-button');
+        fireEvent.press(buyButton);
+    
+        await waitFor(() => getByText('1'));
+    
+        expect(getByText('1')).toBeTruthy();
     });
 });

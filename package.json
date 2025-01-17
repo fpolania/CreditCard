@@ -22,6 +22,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
+    "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
     "crypto-js": "^3.3.0",
     "expo": "~52.0.25",

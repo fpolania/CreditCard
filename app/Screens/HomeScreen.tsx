@@ -69,7 +69,7 @@ export const HomeScreen = () => {
             <Text style={styles.productName}>{item.title}</Text>
             <Text style={styles.productDescription}>{item.description}</Text>
             <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
-            <TouchableOpacity
+            <TouchableOpacity id='buy-button'
                 style={styles.selectButton}
                 onPress={() => toggleSelection(item)}
             >
