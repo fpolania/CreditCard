@@ -1,11 +1,10 @@
 import { Product } from '../interfaces/product-interface';
 
-
 export const SET_PRODUCTS = 'SET_PRODUCTS';
 export const ADD_PRODUCT = 'ADD_PRODUCT';
 export const REMOVE_PRODUCT = 'REMOVE_PRODUCT';
 export const REMOVE_PRODUCTALL = 'REMOVE_PRODUCTALL';
-
+export const STORE_CREDIT_CARD = 'STORE_CREDIT_CARD';
 
 export const setProducts = (products: Product[]) => ({
   type: SET_PRODUCTS,
@@ -23,6 +22,12 @@ export const removeProduct = (productId: string) => ({
 });
 export const clearSelectedProducts = () => {
   return {
-      type: REMOVE_PRODUCTALL
+    type: REMOVE_PRODUCTALL
+  };
+};
+export const storeCreditCardData = (data) => {
+  return {
+    type: STORE_CREDIT_CARD,
+    payload: data,
   };
 };

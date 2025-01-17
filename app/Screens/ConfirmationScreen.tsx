@@ -1,36 +1,27 @@
 import { View, StyleSheet } from 'react-native';
 import { Text, Image, Button } from 'native-base';
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { clearSelectedProducts } from '../redux/actions';
-import { Product } from '../interfaces/product-interface';
-import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import { useFocusEffect } from '@react-navigation/native';
-import { BackHandler } from 'react-native'; 
-
-type RootStackParamList = {
-    Splash: undefined;
-    Home: undefined;
-    Cart: { selectedProducts: Product[] };
-    Confirmation: { dataClient: any }
-};
-
-type ConfirmationcreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Confirmation'>;
+import { BackHandler } from 'react-native';
+import { decryptedData } from '../crypto/crypto';
 
 
-const ConfirmationScreen = ({ route }) => {
+const ConfirmationScreen = () => {
     const dispatch = useDispatch();
-    const navigation = useNavigation<ConfirmationcreenNavigationProp>();
-    const { dataClient } = route.params;
-    const { amount, units, person, cardType, cardNumber, document } = dataClient;
-    const [dateNow, setDate] = useState(new Date());
+    const navigation = useNavigation(); const [dateNow, setDate] = useState(new Date());
+    const encryptedData = useSelector((state: any) => state.encryptedCardData);
+
+    const decryptedDataItem = decryptedData(encryptedData);
+    const { amount, units, person, cardType, cardNumber, document } = decryptedDataItem;
 
     useFocusEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
         return () => backHandler.remove();
     });
-    
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -58,7 +49,7 @@ const ConfirmationScreen = ({ route }) => {
     };
     const handleSubmit = () => {
         dispatch(clearSelectedProducts());
-        navigation.navigate('Home');
+        navigation.navigate('Home' as never);
     };
     return (
         <View style={styles.container}>

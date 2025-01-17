@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import SplashScreen from '../Screens/SplashScreen';
-import HomeScreen from '../Screens/HomeScreen';
+import {HomeScreen} from '../Screens/HomeScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialIcons } from "@expo/vector-icons";
 import { Icon } from 'native-base';
@@ -15,7 +15,7 @@ export const Navigation = () => {
             <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Splash" component={SplashScreen} />
                 <Stack.Screen name="Home" component={HomeScreen}
-                    options={({ navigation }) => ({
+                    options={() => ({
                         title: 'Productos',
                         headerTitleAlign: 'center',
                         unmountOnBlur: true,

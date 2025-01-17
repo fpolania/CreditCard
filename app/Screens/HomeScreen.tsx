@@ -10,16 +10,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProduct, removeProduct, setProducts } from '../redux/actions';
 
-type RootStackParamList = {
-    Splash: undefined;
-    Home: undefined;
-    Cart: { selectedProducts: Product[] };
-};
+// type RootStackParamList = {
+//     Splash: undefined;
+//     Home: undefined;
+//     Cart: undefined;
+// };
 
-type HomecreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+// type HomecreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
-const HomeScreen = () => {
-    const navigation = useNavigation<HomecreenNavigationProp>();
+export const HomeScreen = () => {
+    const navigation = useNavigation();
     const dispatch = useDispatch();
     const products = useSelector((state: any) => state.products);
     const selectedProducts = useSelector((state: any) => state.selectedProducts);
@@ -56,7 +56,7 @@ const HomeScreen = () => {
         if (selectedProducts.length === 0) {
             Alert.alert('No hay productos seleccionados', 'Por favor, seleccione al menos un producto para comprar.');
         } else {
-            navigation.navigate("Cart", { selectedProducts });
+            navigation.navigate("Cart" as never);
         }
     };
 
@@ -198,4 +198,3 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;

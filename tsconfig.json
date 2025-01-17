@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "strict": true,
+    "esModuleInterop": true,
     "paths": {
       "@/*": [
         "./*"

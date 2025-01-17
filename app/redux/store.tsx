@@ -10,6 +10,7 @@ import { Product } from '../interfaces/product-interface';
 interface State {
   products: Product[];
   selectedProducts: Product[];
+  encryptedCardData: null,
 }
 
 
@@ -17,6 +18,7 @@ interface State {
 const initialState: State = {
   products: [],
   selectedProducts: [],
+  encryptedCardData: null,
 };
 
 
@@ -38,6 +40,8 @@ const rootReducer = (state = initialState, action: any): State => {
         ...state,
         selectedProducts: state.selectedProducts.filter(product => product.id !== action.payload),
       };
+    case 'STORE_CREDIT_CARD':
+      return { ...state, encryptedCardData: action.payload };
     case 'REMOVE_PRODUCTALL':
       return {
         ...state,

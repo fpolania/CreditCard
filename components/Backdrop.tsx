@@ -4,22 +4,11 @@ import { Backdrop as BackdropComponent } from 'react-native-backdrop';
 import { Button, Icon, Input } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
-import { Product } from '@/app/interfaces/product-interface';
 import { createPaymentIntent } from './../app/services/payment/payment';
 import Spinner from "react-native-loading-spinner-overlay";
-
-type RootStackParamList = {
-    Splash: undefined;
-    Home: undefined;
-    Cart: { selectedProducts: Product[] };
-    Confirmation: { dataClient: any }
-};
-
-type ConfirmationcreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Confirmation'>;
-
-
-
+import { useDispatch } from 'react-redux';
+import { storeCreditCardData } from '@/app/redux/actions';
+import { encryptData } from '@/app/crypto/crypto';
 
 
 const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any) => {
@@ -31,8 +20,9 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
     const [identicationNumber, setIdentication] = useState('');
     const [error, setError] = useState('');
     const [cardType, setCardType] = useState('');
-    const navigation = useNavigation<ConfirmationcreenNavigationProp>();
+    const navigation = useNavigation();
     const [spinner, setSpinner] = useState(false);
+    const dispatch = useDispatch();
 
     /** @type {*}  Valida que el formulario sea valido*/
     const isFormValid = (
@@ -59,10 +49,12 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
             cardNumber: cardNumber,
             document: identicationNumber
         }
+        const encryptedData = encryptData(data);
         const response = await createPaymentIntent(data);
+        dispatch(storeCreditCardData(encryptedData) as any);
         setSpinner(false);
         if (response?.amount) {
-            navigation.navigate('Confirmation', { dataClient: data })
+            navigation.navigate('Confirmation' as never)
         } else if (response?.error) {
             Alert.alert(response?.error?.code, response?.error?.message);
         }
