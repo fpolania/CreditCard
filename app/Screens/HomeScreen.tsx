@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     View, Text, FlatList, StyleSheet,
-    Image, TouchableOpacity, Alert, ActivityIndicator
+    Image, TouchableOpacity, Alert
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { getProducts } from '../services/backend/products';
@@ -19,7 +19,6 @@ export const HomeScreen = () => {
     const products = useSelector((state: any) => state.products);
     const selectedProducts = useSelector((state: any) => state.selectedProducts);
     const cartCount = selectedProducts.length;
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,11 +62,8 @@ export const HomeScreen = () => {
      */
     const renderProduct = ({ item }: { item: Product }) => (
         <View style={styles.productCard}>
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
             <Image
                 source={{ uri: item.image }}
-                onLoadStart={() => setLoading(true)}
-                onLoadEnd={() => setLoading(false)}
                 style={styles.productImage}
             />
             <Text style={styles.productName}>{item.title}</Text>
