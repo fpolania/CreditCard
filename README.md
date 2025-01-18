@@ -13,8 +13,18 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 2. Start the app
 
    ```bash
-    npx expo start
+    npx expo start 0 npx expo start --dev-client Recuerda esto se ejecuta por consola en la raiz del proyecto.
    ```
+
+   ```Adicionales
+   esto va generar un codigo QR y lo debes scanear con tu celular ANDROID e IP la cual debe ser tipo asi. 192.168.1.10:8081 esta se puede colocar en expo añadiendo exp://192.168.1.10:8081 esto es un ejemplo de la ip que puede salir en mi caso sale esa por la red. Recuerda lo vas a ver consola en la raiz del proyecto.
+   ejemplo: Metro waiting on
+   exp+creditcard://expo-development-client/?url=http%3A%2F%2F192.168.1.10%3A8081
+    ```
+
+     ```Run Test
+     para correr las pruebas unitarias se debe ejeuctar por consola npm rum test.
+     ```
 
 In the output, you'll find options to open the app in a
 
