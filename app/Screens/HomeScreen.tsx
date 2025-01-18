@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View, Text, FlatList, StyleSheet,
     Image, TouchableOpacity, Alert
@@ -11,19 +11,30 @@ import { useNavigation } from '@react-navigation/native';
 import { Product } from '../interfaces/product-interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProduct, removeProduct, setProducts } from '../redux/actions';
-
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
+import CustomSpinner from '@/components/Spinner';
 
 export const HomeScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const products = useSelector((state: any) => state.products);
     const selectedProducts = useSelector((state: any) => state.selectedProducts);
+    const [spinner, setSpinner] = useState(false);
     const cartCount = selectedProducts.length;
+
+
+    useFocusEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+        return () => backHandler.remove();
+    });
 
     useEffect(() => {
         const fetchData = async () => {
+            setSpinner(true);
             const response = await getProducts();
             dispatch(setProducts(response));
+            setSpinner(false);
         };
 
         fetchData();
@@ -81,28 +92,31 @@ export const HomeScreen = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <StatusBar style="auto" />
-            <FlatList
-                data={products}
-                renderItem={renderProduct}
-                keyExtractor={item => item.id}
-                contentContainerStyle={styles.listContainer}
-            />
-            <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
-                <Icon
-                    color="white"
-                    size={30}
-                    as={<MaterialIcons name="shopping-cart" />}
-                    ml={1}
+        <>
+            <View style={styles.container}>
+                <StatusBar style="auto" />
+                <FlatList
+                    data={products}
+                    renderItem={renderProduct}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={styles.listContainer}
                 />
-                {cartCount > 0 && (
-                    <View style={styles.badge}>
-                        <Text style={styles.badgeText}>{cartCount}</Text>
-                    </View>
-                )}
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
+                    <Icon
+                        color="white"
+                        size={30}
+                        as={<MaterialIcons name="shopping-cart" />}
+                        ml={1}
+                    />
+                    {cartCount > 0 && (
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{cartCount}</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
+            </View>
+            <CustomSpinner visible={spinner} textContent="Cargando Productos..." />
+        </>
     );
 };
 

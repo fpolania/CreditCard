@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
 /**
@@ -10,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
  */
 const SplashScreen = () => {
   const navigation = useNavigation();
+
 
   useEffect(() => {
     const timer = setTimeout(() => {

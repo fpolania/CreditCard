@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { Text, Image, Button } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { clearCreditCardData, clearSelectedProducts } from '../redux/actions';
@@ -11,10 +11,18 @@ import { decryptedData } from '../crypto/crypto';
 
 const ConfirmationScreen = () => {
     const dispatch = useDispatch();
-    const navigation = useNavigation(); const [dateNow, setDate] = useState(new Date());
+    const navigation = useNavigation();
+    const [dateNow, setDate] = useState(new Date());
     const encryptedData = useSelector((state: any) => state.encryptedCardData);
 
-    const decryptedDataItem = decryptedData(encryptedData);
+    const decryptedDataItem = useMemo(() => {
+        if (!encryptedData) {
+            return null;
+        }
+        const data = decryptedData(encryptedData);
+        return data;
+    }, []);
+
     const { amount, units, person, cardType, cardNumber, document } = decryptedDataItem;
 
     useFocusEffect(() => {
@@ -47,7 +55,7 @@ const ConfirmationScreen = () => {
             hour12: true,
         }).format(date);
     };
-    const handleSubmit = () => {
+    const handleSubmitHome = () => {
         dispatch(clearSelectedProducts());
         dispatch(clearCreditCardData());
         navigation.navigate('Home' as never);
@@ -86,7 +94,7 @@ const ConfirmationScreen = () => {
                     <Text color={'#666666'} bold fontSize={16}>TIPO DE PAGO: TARJETA {cardType.toUpperCase()} </Text>
                     <Text color={'#666666'} bold fontSize={16}>TARJETA: {'*'.repeat(cardNumber.length - 4) + cardNumber.slice(-4)} </Text>
                 </View>
-                <Button style={{ backgroundColor: '#FFE9E2', borderRadius: 30, top: 20 }} borderRadius={30} onPress={handleSubmit} >
+                <Button style={{ backgroundColor: '#FFE9E2', borderRadius: 30, top: 20 }} borderRadius={30} onPress={() => handleSubmitHome()} >
                     <Text color={'#FF7423'} bold fontSize={16} lineHeight={22}
                         fontWeight={500}> Volver al Inicio</Text>
                 </Button>

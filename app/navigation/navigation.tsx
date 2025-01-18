@@ -22,6 +22,7 @@ export const Navigation = () => {
                         headerShown: true,
                         unmountOnBlur: true,
                         swipeEnabled: true,
+                        headerLeft: () => null
                     })}
                 />
                 <Drawer.Screen name="Cart" component={CartScreen}

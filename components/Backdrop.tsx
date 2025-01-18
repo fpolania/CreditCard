@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import { Backdrop as BackdropComponent } from 'react-native-backdrop';
 import { Button, Icon, Input } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { createPaymentIntent } from './../app/services/payment/payment';
-import Spinner from "react-native-loading-spinner-overlay";
 import { useDispatch } from 'react-redux';
 import { storeCreditCardData } from '@/app/redux/actions';
 import { encryptData } from '@/app/crypto/crypto';
-
+import CustomSpinner from '@/components/Spinner';
+import debounce from 'lodash.debounce';
 
 const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any) => {
     const [cardNumber, setCardNumber] = useState('');
@@ -73,29 +73,35 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
     };
 
     /**
+    * Valida que tipo de tarjeta es, para mostrar la imagen.
+    *
+    * @param {string} number
+    */
+    const detectCardType = useCallback(
+        debounce((number: string) => {
+            const firstDigit = number.charAt(0);
+            const type = firstDigit === '5' ? 'MasterCard' : 'Visa';
+            setCardType(type);
+        }, 300), // 300ms de espera antes de ejecutar
+        []
+    );
+    /**
      * Valida que el dato de entrada sea menor al cardNumber para setear el valor,
      * si no es mayor entrega el dato con el formato.
      * @param {string} value
      */
-    const handleInputChange = (value: string) => {
+    const handleInputChange = useCallback((value: string) => {
         const rawValue = value.replace(/-/g, '');
         const isDeleting = value.length < cardNumber.length;
         const updatedValue = isDeleting ? value : formatCardNumber(rawValue);
+
         detectCardType(updatedValue);
         setCardNumber(updatedValue);
         validateCardNumber(rawValue);
-    };
+    }, [cardNumber, detectCardType]);
 
-    /**
-     * Valida que tipo de tarjeta es, para mostrar la imagen.
-     *
-     * @param {string} number
-     */
-    const detectCardType = (number: string) => {
-        const firstDigit = number.charAt(0);
-        const type = firstDigit === '5' ? 'MasterCard' : 'Visa';
-        setCardType(type)
-    };
+
+
 
     /**
      *Valida la cantidad de digitos en el campo CardNumber.
@@ -109,7 +115,11 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
         }
         setError(value.length === 16 ? '' : 'Debe tener 16 dígitos');
     };
-
+    const cardImage = useMemo(() => {
+        return cardType === 'Visa'
+            ? require('../assets/images/visa.png')
+            : require('../assets/images/mastercard.png');
+    }, [cardType]);
 
 
 
@@ -241,14 +251,7 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
                         placeholder="Número de la tarjeta"
                         maxLength={19}
                         InputRightElement={
-                            <Image
-                                source={
-                                    cardType === 'Visa' ?
-                                        require('../assets/images/visa.png')
-                                        : require('../assets/images/mastercard.png')
-                                }
-                                style={styles.imageTypeCard}
-                            />
+                            <Image source={cardImage} style={styles.imageTypeCard} />
                         }
                         borderRadius={50}
                         style={styles.input}
@@ -325,23 +328,13 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
                     <View style={styles.card}>
                         <Text style={styles.title}>TOTAL</Text>
                         <Text style={styles.amount}>$ {amount} </Text>
-                        <Button color={"black"} disabled={!isFormValid} borderRadius={30} onPress={handleSubmit} >
+                        <Button color={"black"} disabled={!isFormValid} borderRadius={30} onPress={() => handleSubmit()} >
                             PAGAR
                         </Button>
                     </View>
                 </View>
             </BackdropComponent>
-            {spinner && (
-                <Spinner
-                    visible={spinner}
-                    textContent={"Validando información..."}
-                    textStyle={{ color: "#FF7423" }}
-                    overlayColor="rgba(0, 0, 0, 0.5)"
-                    size={100}
-                    color="#FF7423"
-                    animation="fade"
-                />
-            )}
+            <CustomSpinner visible={spinner} textContent="Validando información..." />
         </>
     );
 };
