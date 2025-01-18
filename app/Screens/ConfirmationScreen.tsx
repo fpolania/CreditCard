@@ -14,6 +14,7 @@ const ConfirmationScreen = () => {
     const navigation = useNavigation();
     const [dateNow, setDate] = useState(new Date());
     const encryptedData = useSelector((state: any) => state.encryptedCardData);
+    const [comprobanteNumber, setComprobanteNumber] = useState('');
 
     const decryptedDataItem = useMemo(() => {
         if (!encryptedData) {
@@ -22,6 +23,11 @@ const ConfirmationScreen = () => {
         const data = decryptedData(encryptedData);
         return data;
     }, []);
+
+    const generateComprobanteNumber = () => {
+        const randomNumber = Math.floor(Math.random() * 10000000);
+        setComprobanteNumber(randomNumber.toString().padStart(8, '0'));
+    };
 
     const { amount, units, person, cardType, cardNumber, document } = decryptedDataItem;
 
@@ -32,6 +38,7 @@ const ConfirmationScreen = () => {
 
 
     useEffect(() => {
+        generateComprobanteNumber();
         const interval = setInterval(() => {
             setDate(new Date());
         }, 1000);
@@ -82,7 +89,7 @@ const ConfirmationScreen = () => {
             </Text>
             <View style={styles.card}>
                 <View style={{ alignItems: 'flex-start' }}>
-                    <Text color={'amber.500'} bold >Comprobante NO, 00001212</Text>
+                    <Text color={'amber.500'} bold >Comprobante NO, {comprobanteNumber}</Text>
                     <Text color={'cyan.700'} bold>{formatDate(dateNow)} </Text>
                 </View>
                 <View style={styles.hr} />
