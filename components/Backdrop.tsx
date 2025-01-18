@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import { Backdrop as BackdropComponent } from 'react-native-backdrop';
 import { Button, Icon, Input } from 'native-base';
@@ -35,6 +35,20 @@ const CustomBackdrop = ({ visible, handleOpen, handleClose, amount, units }: any
         error === ''
     );
 
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setCardNumber('');
+            setExpirationDate('');
+            setCvv('');
+            setCardHolder('');
+            setInstallments('1');
+            setIdentication('');
+            setError('');
+            setCardType('');
+        });
+        return unsubscribe;
+    }, [navigation]);
     /**
      *Realiza el pago y nevagea a la pantalla de confirmacíon,
      *

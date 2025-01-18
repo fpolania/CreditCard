@@ -6,11 +6,19 @@ import { Product } from '../interfaces/product-interface';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeProduct } from '../redux/actions';
 import CustomBackdrop from '@/components/Backdrop';
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
 
 const CartScreen = () => {
   const dispatch = useDispatch();
   const [isBackdropVisible, setIsBackdropVisible] = useState(false);
   const selectedProducts = useSelector((state: any) => state.selectedProducts);
+
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  });
 
 
   /**
