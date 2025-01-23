@@ -8,3 +8,10 @@ export const getProducts = async () => {
         return [];
     }
 };
+export const getAds = async (filter) => {
+    return await fetch("https://ads-get-" + env + "-ue.a.run.app", {
+      method: "post",
+      body: JSON.stringify(filter),
+      headers: { "Content-Type": "application/json" },
+    });
+  };
