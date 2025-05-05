@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import SplashScreen from '../Screens/SplashScreen';
 import { HomeScreen } from '../Screens/HomeScreen';
@@ -7,15 +7,33 @@ import CartScreen from '../Screens/ShoppingCartScreen';
 import ConfirmationScreen from '../Screens/ConfirmationScreen';
 import { MaterialIcons } from "@expo/vector-icons";
 import { Icon } from "native-base";
+import LoginScreen from '../Screens/login';
+import KanbanScreen from '../Screens/KanbanBoard';
+import { logout } from '../services/backend/AuthHandler';
+
+
 
 
 const Drawer = createDrawerNavigator();
 export const Navigation = () => {
     return (
         <NavigationContainer>
-            <Drawer.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-                <Drawer.Screen name="Splash" component={SplashScreen} />
-                <Drawer.Screen name="Home" component={HomeScreen}
+            <Drawer.Navigator initialRouteName="auth" screenOptions={{ headerShown: false }}>
+                <Drawer.Screen name="auth" component={LoginScreen} />
+                <Drawer.Screen name="board" component={KanbanScreen}
+                    options={() => ({
+                        title: 'Administra tus tareas',
+                        headerTitleAlign: 'center',
+                        headerShown: true,
+                        unmountOnBlur: true,
+                        swipeEnabled: true,
+                        headerLeft: () => null,
+                        headerRight: () => (
+                            <Icon size={8}
+                                onPress={() => { logout() }} as={<MaterialIcons name="logout" />} />
+                        )
+                    })} />
+                {/* <Drawer.Screen name="Home" component={HomeScreen}
                     options={() => ({
                         title: 'Productos',
                         headerTitleAlign: 'center',
@@ -24,8 +42,8 @@ export const Navigation = () => {
                         swipeEnabled: true,
                         headerLeft: () => null
                     })}
-                />
-                <Drawer.Screen name="Cart" component={CartScreen}
+                /> */}
+                {/* <Drawer.Screen name="Cart" component={CartScreen}
                     options={({ navigation }) => ({
                         title: 'Detalle De La Compra',
                         headerTitleAlign: 'center',
@@ -39,8 +57,8 @@ export const Navigation = () => {
                                 ml={3}
                             />
                         ),
-                    })} />
-                <Drawer.Screen name="Confirmation" component={ConfirmationScreen} />
+                    })} /> */}
+                {/* <Drawer.Screen name="Confirmation" component={ConfirmationScreen} /> */}
             </Drawer.Navigator>
 
         </NavigationContainer>

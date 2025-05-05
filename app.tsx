@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { registerRootComponent } from 'expo';
 import { Navigation } from './app/navigation/navigation';
 import { NativeBaseProvider } from 'native-base';
